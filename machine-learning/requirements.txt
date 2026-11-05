@@ -1,0 +1,2 @@
+# Run from repository root. Colab supplies torch/torchvision; keep a compatible pair.
+-e .[ml]

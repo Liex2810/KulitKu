@@ -1,0 +1,9 @@
+.git
+**/.env
+**/.venv
+**/__pycache__
+mobile
+data
+artifacts
+runs
+features

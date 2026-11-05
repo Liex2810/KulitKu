@@ -1,0 +1,57 @@
+{
+  "seed": 42,
+  "folds": 5,
+  "test_folds": 5,
+  "batch_size": 32,
+  "num_workers": 2,
+  "image_size": 224,
+  "models": {
+    "mobilenetv4": "mobilenetv4_conv_small.e2400_r224_in1k",
+    "resnet50": "resnet50.a1_in1k",
+    "convnext_tiny": "convnext_tiny.fb_in1k"
+  },
+  "grids": {
+    "lr": {
+      "classifier__C": [
+        0.1,
+        1,
+        10
+      ],
+      "classifier__class_weight": [
+        null,
+        "balanced"
+      ]
+    },
+    "svm": {
+      "classifier__C": [
+        0.1,
+        1,
+        10
+      ],
+      "classifier__kernel": [
+        "linear",
+        "rbf"
+      ],
+      "classifier__class_weight": [
+        null,
+        "balanced"
+      ]
+    },
+    "rf": {
+      "classifier__n_estimators": [
+        200,
+        400
+      ],
+      "classifier__max_depth": [
+        null,
+        20
+      ],
+      "classifier__class_weight": [
+        null,
+        "balanced"
+      ]
+    }
+  },
+  "n_jobs": 2,
+  "selection_metric": "f1_macro"
+}
