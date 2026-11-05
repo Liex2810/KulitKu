@@ -1,0 +1,334 @@
+{
+  "protocol_version": "2.0",
+  "date": "2026-11-05",
+  "seed": 42,
+  "purpose": "Frozen pretrained CNN feature extraction with classical ML; internal screening research",
+  "storage": {
+    "drive_root": "/content/drive/MyDrive/KulitKu",
+    "dataset_relative": "datasets/original",
+    "code": "GitHub",
+    "compute": "Google Colab Free"
+  },
+  "dataset": {
+    "source_url": "https://www.kaggle.com/datasets/muhammadabdulsami/massive-skin-disease-balanced-dataset",
+    "version": null,
+    "license_verified": false,
+    "classes": [
+      "Eczema",
+      "Herpes Zoster",
+      "Normal",
+      "Ringworm"
+    ],
+    "reported_counts": [
+      6715,
+      8082,
+      7758,
+      8129
+    ],
+    "reported_total": 30684,
+    "patient_ids_available": false,
+    "originals_mixed_with_augmentation": true,
+    "external_labeled_test_available": false
+  },
+  "audit": {
+    "formats": [
+      "jpg",
+      "jpeg",
+      "png",
+      "webp"
+    ],
+    "convert_to": "RGB",
+    "max_megapixels": 25,
+    "minimum_width_provisional": 128,
+    "minimum_height_provisional": 128,
+    "minimum_policy_locked": false,
+    "exact_duplicate_policy": "one representative; prefer verified original; review label conflicts",
+    "unresolved_lineage_policy": "quarantine from primary experiment; report exclusions",
+    "similarity_grouping_requires_review": true,
+    "original_status_values": [
+      "verified_original",
+      "verified_augmented",
+      "unknown"
+    ],
+    "manifest_required": [
+      "image_id",
+      "relative_path",
+      "label",
+      "width",
+      "height",
+      "readable",
+      "sha256",
+      "original_status",
+      "original_id",
+      "group_id",
+      "include",
+      "audit_note"
+    ]
+  },
+  "split": {
+    "development_target_fraction": 0.8,
+    "test_target_fraction": 0.2,
+    "unit": "group_id",
+    "stratify": "label",
+    "cv": "StratifiedGroupKFold",
+    "folds": 5,
+    "shuffle": true,
+    "seed": 42,
+    "validation_original_only": true,
+    "test_original_only": true,
+    "training_verified_derivatives_allowed": true,
+    "exclude_validation_group_derivatives_from_training": true,
+    "patient_independence_claim_allowed": false
+  },
+  "extractors": [
+    {
+      "name": "MobileNetV4-Conv-Small",
+      "pretrained_source": "ImageNet",
+      "implementation_id": null,
+      "weights_id": null,
+      "weights_sha256": null,
+      "frozen": true,
+      "eval_mode": true,
+      "feature_output": "global pooled vector before classification head",
+      "feature_dim": null,
+      "preprocessing": {
+        "input_hw": [
+          224,
+          224
+        ],
+        "resize_crop_policy": null,
+        "interpolation": null,
+        "pixel_scale": null,
+        "mean": null,
+        "std": null,
+        "locked": false
+      }
+    },
+    {
+      "name": "ResNet50",
+      "pretrained_source": "ImageNet",
+      "implementation_id": null,
+      "weights_id": null,
+      "weights_sha256": null,
+      "frozen": true,
+      "eval_mode": true,
+      "feature_output": "global pooled vector before classification head",
+      "feature_dim": null,
+      "preprocessing": {
+        "input_hw": [
+          224,
+          224
+        ],
+        "resize_crop_policy": null,
+        "interpolation": null,
+        "pixel_scale": null,
+        "mean": null,
+        "std": null,
+        "locked": false
+      }
+    },
+    {
+      "name": "ConvNeXt-Tiny",
+      "pretrained_source": "ImageNet",
+      "implementation_id": null,
+      "weights_id": null,
+      "weights_sha256": null,
+      "frozen": true,
+      "eval_mode": true,
+      "feature_output": "global pooled vector before classification head",
+      "feature_dim": null,
+      "preprocessing": {
+        "input_hw": [
+          224,
+          224
+        ],
+        "resize_crop_policy": null,
+        "interpolation": null,
+        "pixel_scale": null,
+        "mean": null,
+        "std": null,
+        "locked": false
+      }
+    }
+  ],
+  "feature_cache": {
+    "deterministic": true,
+    "batch_size_initial": 32,
+    "include_image_ids": true,
+    "key_fields": [
+      "weights_sha256",
+      "preprocessing_hash",
+      "image_id"
+    ],
+    "additional_online_augmentation": false
+  },
+  "classifiers": {
+    "logistic_regression": {
+      "pipeline": [
+        "StandardScaler",
+        "LogisticRegression"
+      ],
+      "fixed": {
+        "max_iter": 5000,
+        "random_state": 42
+      },
+      "grid": {
+        "C": [
+          0.1,
+          1,
+          10
+        ],
+        "class_weight": [
+          null,
+          "balanced"
+        ]
+      }
+    },
+    "svm": {
+      "pipeline": [
+        "StandardScaler",
+        "SVC"
+      ],
+      "fixed": {
+        "probability": false
+      },
+      "grid": {
+        "C": [
+          0.1,
+          1,
+          10
+        ],
+        "kernel": [
+          "linear",
+          "rbf"
+        ],
+        "class_weight": [
+          null,
+          "balanced"
+        ],
+        "gamma": [
+          "scale"
+        ]
+      }
+    },
+    "random_forest": {
+      "pipeline": [
+        "RandomForestClassifier"
+      ],
+      "fixed": {
+        "min_samples_leaf": 1,
+        "random_state": 42
+      },
+      "grid": {
+        "n_estimators": [
+          200,
+          400
+        ],
+        "max_depth": [
+          null,
+          20
+        ],
+        "class_weight": [
+          null,
+          "balanced"
+        ]
+      }
+    }
+  },
+  "search": {
+    "method": "GridSearchCV",
+    "scoring": "f1_macro",
+    "zero_division": 0,
+    "cv_indices": "explicit grouped train indices and original-only validation indices",
+    "scaler_fit_scope": "training fold only",
+    "cv_fit_count": 390,
+    "refits_excluded_from_count": true,
+    "primary_cv_std_ddof": 1,
+    "hyperparameter_tie_break": "persisted deterministic grid order"
+  },
+  "selection": {
+    "quality": "mean validation macro F1",
+    "score_scale": [
+      0,
+      1
+    ],
+    "maximum_absolute_gap": 0.01,
+    "latency": "minimum median pipeline latency among quality candidates",
+    "tie_break": [
+      "minimum combined model bytes",
+      "combo_id alphabetical"
+    ],
+    "test_may_select_model": false
+  },
+  "profiling": {
+    "device": "server CPU",
+    "hardware_description": null,
+    "runtime_versions": null,
+    "runtime_policy": "deployment runtime; consistent across candidates; disclose differences",
+    "threads": 2,
+    "batch_size": 1,
+    "warmup_requests": 20,
+    "development_original_images": 100,
+    "images_per_class": 25,
+    "repetitions_per_image": 5,
+    "sample_seed": 42,
+    "sample_manifest": null,
+    "timer_includes": [
+      "decode",
+      "RGB conversion",
+      "preprocessing",
+      "CNN",
+      "scaler if any",
+      "classifier.predict"
+    ],
+    "timer_excludes": [
+      "network upload",
+      "authentication",
+      "database",
+      "initial model load"
+    ],
+    "statistics": [
+      "median_ms",
+      "p95_ms",
+      "combined_model_bytes"
+    ],
+    "concurrency": 1,
+    "output_parity_required_before_profiling": true
+  },
+  "test": {
+    "open_after_selection_locked": true,
+    "metrics": [
+      "macro_f1",
+      "accuracy",
+      "macro_precision",
+      "macro_recall",
+      "per_class_precision_recall_f1",
+      "confusion_matrix"
+    ],
+    "bootstrap": {
+      "unit": "group_id",
+      "repetitions": 2000,
+      "confidence": 0.95,
+      "seed": 42,
+      "missing_class_policy": "discard replicate and report discarded count; CI conditional on all classes present"
+    },
+    "all_nine_locked_combinations_may_be_reported": true,
+    "retuning_from_test_allowed": false
+  },
+  "deployment": {
+    "location": "FastAPI server",
+    "cnn_format": "ONNX",
+    "classifier_format": "ONNX if compatible otherwise version-locked native pipeline",
+    "parity_check_required": true,
+    "scores_are_calibrated_clinical_probabilities": false
+  },
+  "gates": {
+    "audit_approved": false,
+    "verified_originals_and_groups_sufficient": false,
+    "weights_and_preprocessing_locked": false,
+    "split_group_overlap_zero": false,
+    "profiling_environment_locked": false,
+    "selection_locked_before_test": false
+  },
+  "execution_note": "Specification only. Adapt a runner to enforce all gates and protocol rules; null fields must be resolved before their corresponding stage."
+}
