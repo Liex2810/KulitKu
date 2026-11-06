@@ -1,0 +1,17 @@
+# Torch/torchvision use the matching preinstalled Colab CUDA pair when available.
+# Existing pandas/Pillow are preserved if they satisfy these ranges (avoid Colab conflicts).
+torch>=2.5,<3
+torchvision>=0.20,<1
+timm==1.0.22
+numpy>=1.26,<3
+pandas>=2.2,<3
+Pillow>=10.4,<13
+matplotlib>=3.8,<4
+scikit-learn==1.7.2
+joblib>=1.4,<2
+tqdm>=4.66,<5
+onnx==1.19.1
+onnxruntime==1.23.2
+skl2onnx==1.20.0
+# IPython completion dependency sometimes missing from Colab images.
+jedi==0.19.2
