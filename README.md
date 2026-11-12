@@ -1,5 +1,17 @@
 # KulitKu Monorepo
 
+## Alur branch dan pull request
+
+Buat branch fitur dari `develop` yang terbaru. Gunakan ID kartu Trello pada nama branch, misalnya `feature/US-01-registrasi`.
+
+```bash
+git switch develop
+git pull --ff-only origin develop
+git switch -c feature/US-01-registrasi
+```
+
+Setelah commit, jalankan `git push -u origin feature/US-01-registrasi`. Buat pull request dengan **base** `develop` dan **compare** branch fitur. Cantumkan ID atau tautan kartu Trello di pull request.
+
 Flutter Android + FastAPI + Supabase, dengan eksperimen **3 frozen pretrained CNN × 3 classic ML classifiers**. Kode di GitHub, dataset/artefak di Google Drive, komputasi di Google Colab.
 
 **Paket source prototype yang dapat dijalankan; tidak menyertakan dataset, model medis terlatih, credential, atau APK.** Mode demo hanya memeriksa koneksi dan tidak mengeluarkan prediksi medis. Validasi yang benar-benar telah dilakukan dicatat di `docs/VALIDATION.md`.
